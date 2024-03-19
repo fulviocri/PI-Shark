@@ -88,6 +88,57 @@ sethostname() {
 }
 
 # ========================================================================================================================================================================
+# Cleaning up system
+cleanupsystem() {
+	echo ""
+	echo "Cleaning up system"
+	read -p "[Press enter to continue]"
+
+    if systemctl -all list-unit-files alsa-restore.service | grep "alsa-restore.service enabled" >/dev/null 2>&1 ;then
+		echo "Disabling alsa-restore.service"
+	    systemctl disable alsa-restore.service >/dev/null 2>&1
+	    systemctl stop alsa-restore.service >/dev/null 2>&1
+    fi
+
+    if systemctl -all list-unit-files bluetooth.service | grep "bluetooth.service enabled" >/dev/null 2>&1 ;then
+		echo "Disabling bluetooth.service"
+	    systemctl disable bluetooth.service >/dev/null 2>&1
+	    systemctl stop bluetooth.service >/dev/null 2>&1
+    fi
+
+    if systemctl -all list-unit-files bthelper@hci0.service | grep "bthelper@hci0.service enabled" >/dev/null 2>&1 ;then
+		echo "Disabling bthelper@hci0.service"
+	    systemctl disable bthelper@hci0.service >/dev/null 2>&1
+	    systemctl stop bthelper@hci0.service >/dev/null 2>&1
+    fi
+
+    if systemctl -all list-unit-files systemd-networkd-wait-online.service | grep "systemd-networkd-wait-online.service enabled" >/dev/null 2>&1 ;then
+		echo "Disabling systemd-networkd-wait-online.service"
+	    systemctl disable systemd-networkd-wait-online.service >/dev/null 2>&1
+	    systemctl stop systemd-networkd-wait-online.service >/dev/null 2>&1
+    fi
+
+    if systemctl -all list-unit-files triggerhappy.service | grep "triggerhappy.service enabled" >/dev/null 2>&1 ;then
+		echo "Disabling triggerhappy.service"
+	    systemctl disable triggerhappy.service >/dev/null 2>&1
+	    systemctl stop triggerhappy.service >/dev/null 2>&1
+
+        systemctl disable triggerhappy.socket >/dev/null 2>&1
+        systemctl stop triggerhappy.socket >/dev/null 2>&1
+    fi
+
+    if systemctl -all list-unit-files ModemManager | grep "ModemManager enabled" >/dev/null 2>&1 ;then
+		echo "Uninstalling ModemManager"
+		apt-get remove --purge modemmanager >/dev/null 2>&1
+    fi
+
+	echo "Removing unused packages"
+	apt-get -y autoremove --purge >/dev/null 2>&1
+
+	echo "DONE"
+}
+
+# ========================================================================================================================================================================
 # System update
 systemupdate() {
 	echo ""
@@ -96,9 +147,9 @@ systemupdate() {
 
 	UPDATENUM=$(apt-get -q -y --ignore-hold --allow-change-held-packages --allow-unauthenticated -s dist-upgrade | /bin/grep  ^Inst | wc -l)
 
-	echo "Package"
-	apt-get update >/dev/null 2>&1
+	echo "Package to update: $UPDATENUM"
 
+	apt-get update >/dev/null 2>&1
 	apt-get -y upgrade >/dev/null 2>&1
 
 	echo "DONE"
@@ -127,52 +178,11 @@ installnetworkcomponent() {
 	apt-get install -y python3-pip python3-venv python3-smbus >/dev/null 2>&1
 	apt-get install -y nmap tcpdump doscan nast ettercap-text-only ncat >/dev/null 2>&1
 	apt-get install -y dhcpdump dhcpig dhcp-probe dhcpstarv dhcping >/dev/null 2>&1
-	apt-get install -y arping arpon arp-scan >/dev/null 2>&1
-	apt-get install -y dnsenum dnsmap dnsrecon dnswalk dnsutils >/dev/null 2>&1
+	# apt-get install -y arping arpon arp-scan >/dev/null 2>&1
+	apt-get install -y arping arp-scan >/dev/null 2>&1
+    apt-get install -y dnsenum dnsmap dnsrecon dnswalk dnsutils >/dev/null 2>&1
 	apt-get install -y backdoor-factory masscan netdiscover >/dev/null 2>&1
 	
-	echo "DONE"
-}
-
-# ========================================================================================================================================================================
-# Cleaning up system
-disablesystemservices() {
-	echo ""
-	echo "Cleaning up system"
-	read -p "[Press enter to continue]"
-
-    if systemctl -all list-unit-files alsa-restore.service | grep "alsa-restore.service enabled" >/dev/null 2>&1 ;then
-		echo "Disabling alsa-restore.service"
-	    systemctl disable alsa-restore.service >/dev/null 2>&1
-	    systemctl stop alsa-restore.service >/dev/null 2>&1
-    fi
-
-    if systemctl -all list-unit-files bluetooth.service | grep "bluetooth.service enabled" >/dev/null 2>&1 ;then
-		echo "Disabling bluetooth.service"
-	    systemctl disable bluetooth.service >/dev/null 2>&1
-	    systemctl stop bluetooth.service >/dev/null 2>&1
-    fi
-
-    if systemctl -all list-unit-files bthelper@hci0.service | grep "bthelper@hci0.service enabled" >/dev/null 2>&1 ;then
-		echo "Disabling bthelper@hci0.service"
-	    systemctl disable bthelper@hci0.service >/dev/null 2>&1
-	    systemctl stop bthelper@hci0.service >/dev/null 2>&1
-    fi
-
-    if systemctl -all list-unit-files ModemManager | grep "ModemManager enabled" >/dev/null 2>&1 ;then
-		echo "Uninstalling ModemManager"
-		apt-get remove --purge modemmanager >/dev/null 2>&1
-    fi
-
-    if systemctl -all list-unit-files systemd-networkd-wait-online.service | grep "systemd-networkd-wait-online.service enabled" >/dev/null 2>&1 ;then
-		echo "Disabling systemd-networkd-wait-online.service"
-	    systemctl disable systemd-networkd-wait-online.service >/dev/null 2>&1
-	    systemctl stop systemd-networkd-wait-online.service >/dev/null 2>&1
-    fi
-
-	echo "Removing unused packages"
-	apt-get -y autoremove --purge >/dev/null 2>&1
-
 	echo "DONE"
 }
 
@@ -251,10 +261,10 @@ setupcomplete() {
 setrootpassword
 changecurrentdatetime
 sethostname
+cleanupsystem
 systemupdate
 installbasecomponent
 installnetworkcomponent
-disablesystemservices
 configurefirewall
 copyconfigfiles
 pythonvenv
