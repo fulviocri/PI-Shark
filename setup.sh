@@ -286,7 +286,7 @@ change_system_locale() {
 	dpkg-reconfigure -f noninteractive tzdata >/dev/null 2>&1
 	dpkg-reconfigure -f noninteractive keyboard-configuration
 
-	echo "DONE "
+	echo "DONE"
 }
 
 # ========================================================================================================================================================================
