@@ -248,8 +248,8 @@ python_venv() {
 	echo ""
 	read -p "Installing python vEnv and libraries. [Press enter to continue]"
 
-	python3 -m venv /pi-shark/venv >/dev/null 2>&1
-	source /pi-shark/venv/bin/activate >/dev/null 2>&1
+	python3 -m venv /pi-shark/.venv >/dev/null 2>&1
+	source /pi-shark/.venv/bin/activate >/dev/null 2>&1
 
 	pip install python-nmap >/dev/null 2>&1
 	pip install netifaces >/dev/null 2>&1
@@ -263,12 +263,13 @@ python_venv() {
 
 # ========================================================================================================================================================================
 # Installing Django
-install_django() {
+install_flask() {
 	echo ""
-	read -p "Installing Django. [Press enter to continue]"
+	read -p "Installing Flask. [Press enter to continue]"
 
-	source /pi-shark/venv/bin/activate >/dev/null 2>&1
-	pip install Django
+	python3 -m venv /pi-shark/admin/.venv >/dev/null 2>&1
+	source /pi-shark/admin/.venv/bin/activate >/dev/null 2>&1
+	pip install Flask
 	deactivate >/dev/null 2>&1
 
 	echo "DONE"
