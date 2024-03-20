@@ -236,8 +236,8 @@ pythonvenv() {
 	echo "Installing python vEnv and libraries"
 	read -p "[Press enter to continue]"
 
-	python3 -m venv /recon-pi/venv >/dev/null 2>&1
-	source /recon-pi/venv/bin/activate >/dev/null 2>&1
+	python3 -m venv /pi-shark/venv >/dev/null 2>&1
+	source /pi-shark/venv/bin/activate >/dev/null 2>&1
 
 	pip install python-nmap >/dev/null 2>&1
 	pip install netifaces >/dev/null 2>&1
