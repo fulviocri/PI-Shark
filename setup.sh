@@ -50,7 +50,7 @@ set_root_password() {
 		echo "Password change error"
 		exit 1
 	fi
-
+	
 	echo "DONE"
 }
 
