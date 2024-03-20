@@ -24,7 +24,7 @@ ChallengeResponseAuthentication no
 UsePAM yes
 
 X11Forwarding no
-PrintMotd yes
+PrintMotd no
 PrintLastLog yes
 
 # no default banner path
