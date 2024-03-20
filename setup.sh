@@ -220,29 +220,30 @@ copy_config_files() {
 	echo ""
 	read -p "Copy config files. [Press enter to continue]"
 
-	cd /
+	git clone https://github.com/fulviocri/PI-Shark.git /tmp/deploy >/dev/null 2>&1
 
-	git clone https://github.com/fulviocri/PI-Shark.git . >/dev/null 2>&1
-	rm /README.md
-	rm /setup.sh
+	rm /tmp/deploy/README.md
+	rm /tmp/deploy/setup.sh
+
+	cp -r /tmp/deploy/* /
 	
-	ln -s /pi-shark/pi-shark.py /usr/bin/pi-shark
-	chown root:root /usr/bin/pi-shark
-	chmod +x /usr/bin/pi-shark
+	ln -s /pi-shark/pi-shark.py /usr/bin/pi-shark . >/dev/null 2>&1
+	chown root:root /usr/bin/pi-shark . >/dev/null 2>&1
+	chmod +x /usr/bin/pi-shark . >/dev/null 2>&1
 
-	ln -s /pi-shark/telegram-send.sh /usr/bin/telegram-send
-	chown root:root /usr/bin/telegram-send
-	chmod +x /usr/bin/telegram-send
+	ln -s /pi-shark/telegram-send.sh /usr/bin/telegram-send . >/dev/null 2>&1
+	chown root:root /usr/bin/telegram-send . >/dev/null 2>&1
+	chmod +x /usr/bin/telegram-send . >/dev/null 2>&1
 
-	ln -s /pi-shark/web-server.sh /usr/bin/web-server
-	chown root:root /usr/bin/web-server
-	chmod +x /usr/bin/web-server
+	ln -s /pi-shark/web-server.sh /usr/bin/web-server . >/dev/null 2>&1
+	chown root:root /usr/bin/web-server . >/dev/null 2>&1
+	chmod +x /usr/bin/web-server . >/dev/null 2>&1
 
 	echo "DONE"
 }
 
 # ========================================================================================================================================================================
-# Copy config file
+# Configuring Python vEnvironment
 python_venv() {
 	echo ""
 	read -p "Installing python vEnv and libraries. [Press enter to continue]"
@@ -259,6 +260,23 @@ python_venv() {
 
 	echo "DONE"
 }
+
+# ========================================================================================================================================================================
+# Installing Django
+install_django() {
+	echo ""
+	read -p "Installing Django. [Press enter to continue]"
+
+	source /pi-shark/venv/bin/activate >/dev/null 2>&1
+	pip install Django
+	deactivate >/dev/null 2>&1
+
+	echo "DONE"
+}
+
+
+
+
 
 # ========================================================================================================================================================================
 # Copy config file
