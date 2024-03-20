@@ -29,9 +29,9 @@ echo -e "\e[0m"
 # Setting the password for the root user account
 set_root_password() {
 	echo ""
-	echo "Setting the password for root user account"
-	read -p "New password: " root_password_1
-	read -p "Retype new password: " root_password_2
+	echo "Setting a password for root user account:"
+	read -p "New password: " -s root_password_1
+	read -p "Retype new password: " -s root_password_2
 
 	if [ $root_password_1 != $root_password_2 ]; then
 		echo "Passwords do not match"
@@ -48,6 +48,8 @@ set_root_password() {
 		exit 1
 	fi
 
+	unset root_password_1
+	unset root_password_2
 	echo "DONE"
 }
 
@@ -55,7 +57,7 @@ set_root_password() {
 # Setting the current date & time
 change_current_datetime() {
 	echo ""
-	echo "Setting the current date and time"
+	echo "Setting the current date and time:"
 	date
 	read -p "Is the current date and time correct? (y/n): " correct_date
 
@@ -72,6 +74,8 @@ change_current_datetime() {
 		fi
 	fi
 
+	unset correct_date
+	unset current_date
 	echo "DONE"
 }
 
@@ -79,11 +83,12 @@ change_current_datetime() {
 # Setting FQDN host name
 set_hostname() {
 	echo ""
-	echo "Setting FQDN host name"
-	read -p "[Press enter to continue]"
+	echo "Setting host name:"
+	read -p "Type the host name: " -s host_name
 
-	hostnamectl set-hostname pi-shark.local >/dev/null 2>&1
+	hostnamectl set-hostname $host_name.local >/dev/null 2>&1
 
+	unset host_name
 	echo "DONE"
 }
 
@@ -91,8 +96,7 @@ set_hostname() {
 # Cleaning up system
 cleanup_system() {
 	echo ""
-	echo "Cleaning up system"
-	read -p "[Press enter to continue]"
+	read -p "Cleaning up system. [Press enter to continue]"
 
     if systemctl -all list-unit-files alsa-restore.service | grep "alsa-restore.service enabled" >/dev/null 2>&1 ;then
 		echo "Disabling alsa-restore.service"
@@ -128,7 +132,7 @@ cleanup_system() {
     fi
 
     if systemctl -all list-unit-files ModemManager | grep "ModemManager enabled" >/dev/null 2>&1 ;then
-		echo "Uninstalling ModemManager"
+		echo "Uninstalling ModemManager and old GCC versions"
 		apt-get remove --purge -y modemmanager >/dev/null 2>&1
 		apt-get remove --purge -y gcc-7-base gcc-8-base gcc-9-base
     fi
@@ -143,8 +147,7 @@ cleanup_system() {
 # System update
 system_update() {
 	echo ""
-	echo "Starting system update"
-	read -p "[Press enter to continue]"
+	read -p "Starting system update. [Press enter to continue]"
 
 	UPDATENUM=$(apt-get -q -y --ignore-hold --allow-change-held-packages --allow-unauthenticated -s dist-upgrade | /bin/grep  ^Inst | wc -l)
 
@@ -155,6 +158,7 @@ system_update() {
 		apt-get -y upgrade >/dev/null 2>&1
 	fi
 
+	unset UPDATENUM
 	echo "DONE"
 }
 
@@ -162,8 +166,7 @@ system_update() {
 # Installing base component
 install_base_component() {
 	echo ""
-	echo "Installing base component"
-	read -p "[Press enter to continue]"
+	read -p "Installing base component. [Press enter to continue]"
 
 	apt-get install -y build-essential git curl xsltproc rsync tmux >/dev/null 2>&1
 
@@ -174,8 +177,7 @@ install_base_component() {
 # Installing networking component
 install_network_component() {
 	echo ""
-	echo "Installing networking component"
-	read -p "[Press enter to continue]"
+	read -p "Installing networking component. [Press enter to continue]"
 	
 	apt-get install -y i2c-tools ufw >/dev/null 2>&1
 	apt-get install -y python3-pip python3-venv python3-smbus >/dev/null 2>&1
@@ -193,10 +195,10 @@ install_network_component() {
 # Configuring UFW firewall
 configure_network() {
 	echo ""
-	echo "Configuring UFW firewall"
-	read -p "[Press enter to continue]"
+	read -p "Configuring UFW firewall. [Press enter to continue]"
 
 	rfkill unblock wifi >/dev/null 2>&1
+
 	for filename in /var/lib/systemd/rfkill/*:wlan ; do
 		echo 0 > $filename
 	done
@@ -206,6 +208,7 @@ configure_network() {
 	ufw deny in on eth0 >/dev/null 2>&1
 	ufw allow in on wlan0 to any port ssh >/dev/null 2>&1
 	yes | ufw enable >/dev/null 2>&1
+
 	echo "DONE"
 }
 
@@ -213,8 +216,7 @@ configure_network() {
 # Copy config file
 copy_config_files() {
 	echo ""
-	echo "Copy config files"
-	read -p "[Press enter to continue]"
+	read -p "Copy config files. [Press enter to continue]"
 	
 	cp -RT /boot/deploy/. / >/dev/null 2>&1
 
@@ -239,8 +241,7 @@ copy_config_files() {
 # Copy config file
 python_venv() {
 	echo ""
-	echo "Installing python vEnv and libraries"
-	read -p "[Press enter to continue]"
+	read -p "Installing python vEnv and libraries. [Press enter to continue]"
 
 	python3 -m venv /pi-shark/venv >/dev/null 2>&1
 	source /pi-shark/venv/bin/activate >/dev/null 2>&1
@@ -259,15 +260,16 @@ python_venv() {
 # Copy config file
 customize_telegram_bot() {
 	echo ""
-	echo "Customizing Telegram bot:"
-	read -p "[Press enter to continue]"
+	read -p "Customizing Telegram bot. [Press enter to continue]"
 
-	read -p "Type the Telegram GROUP_ID: " group_id
-	read -p "Type the Telegram BOT token: " bot_token
+	read -p "Type the Telegram GROUP_ID: " GROUP_ID
+	read -p "Type the Telegram BOT token: " BOT_TOKEN
 
-	sed -i "s/^GROUP_ID=.*/GROUP_ID=\"$group_id\"/" /pi-shark/telegram-send.sh
-	sed -i "s/^BOT_TOKEN=.*/BOT_TOKEN=\"$bot_token\"/" /pi-shark/telegram-send.sh
+	sed -i "s/^GROUP_ID=.*/GROUP_ID=\"$GROUP_ID\"/" /pi-shark/telegram-send.sh
+	sed -i "s/^BOT_TOKEN=.*/BOT_TOKEN=\"$BOT_TOKEN\"/" /pi-shark/telegram-send.sh
 
+	unset GROUP_ID
+	unset BOT_TOKEN
 	echo "DONE"
 }
 
@@ -275,7 +277,7 @@ customize_telegram_bot() {
 # Setting the current date & time
 change_system_locale() {
 	echo ""
-	echo "Configuring the System Locale:"
+	read -p "Configuring the System Locale. [Press enter to continue]"
 
 	rm -f /etc/localtime >/dev/null 2>&1
 	echo "Europe/Rome" >/etc/timezone >/dev/null 2>&1
@@ -289,8 +291,7 @@ change_system_locale() {
 # Setup completed
 setup_complete() {
 	echo ""
-	echo "PI-Shark Setup completed"
-	read -p "[Press enter to reboot]"
+	read -p "PI-Shark Setup completed. [Press enter to reboot]"
 	reboot
 }
 
