@@ -9,6 +9,7 @@ fi
 
 clear
 
+echo -e "\e[31m"
 echo ""
 echo "  ███████████  █████             █████████  █████                          █████          █████████            █████                        "
 echo " ░░███░░░░░███░░███             ███░░░░░███░░███                          ░░███          ███░░░░░███          ░░███                         "
@@ -19,30 +20,26 @@ echo "  ░███         ░███             ███    ░███ 
 echo "  █████        █████           ░░█████████  ████ █████░░████████ █████     ████ █████   ░░█████████ ░░██████   ░░█████  ░░████████ ░███████ "
 echo " ░░░░░        ░░░░░             ░░░░░░░░░  ░░░░ ░░░░░  ░░░░░░░░ ░░░░░     ░░░░ ░░░░░     ░░░░░░░░░   ░░░░░░     ░░░░░    ░░░░░░░░  ░███░░░  "
 echo "                                                                                                                                   ░███     "
-echo "                                                                                                                                   █████    "
+echo "                                                                                                                 by Mr. K4l1m3r0   █████    "
 echo "                                                                                                                                  ░░░░░     "
 echo ""
-echo ""
+echo -e "\e[0m"
 
 # ========================================================================================================================================================================
 # Setting the password for the root user account
 set_root_password() {
 	echo ""
-	echo "Setting the password for root user account:"
-	echo -e "New password: "
-	read -s root_password_1
-
-	echo -e "Retype new password: "
-	read -s root_password_2
+	echo "Setting the password for root user account"
+	read -p "New password: " root_password_1
+	read -p "Retype new password: " root_password_2
 
 	if [ $root_password_1 != $root_password_2 ]; then
 		echo "Passwords do not match"
 		setrootpassword
 	fi
 
-	echo "root:$root_password_1" | chpasswd -e
+	echo "root:$root_password_1" | chpasswd -e >/dev/null 2>&1
 	#echo -e "$root_password_1\n$root_password_1" | passwd root >/dev/null 2>&1
-	echo ""
 
 	if [ $? -eq 0 ]; then
 		echo "Password changed successfully"
@@ -58,7 +55,7 @@ set_root_password() {
 # Setting the current date & time
 change_current_datetime() {
 	echo ""
-	echo "Setting the current date and time:"
+	echo "Setting the current date and time"
 	date
 	read -p "Is the current date and time correct? (y/n): " correct_date
 
@@ -85,8 +82,7 @@ set_hostname() {
 	echo "Setting FQDN host name"
 	read -p "[Press enter to continue]"
 
-	hostnamectl set-hostname pi-tail >/dev/null 2>&1
-	hostnamectl set-hostname pi-tail.local >/dev/null 2>&1
+	hostnamectl set-hostname pi-shark.local >/dev/null 2>&1
 
 	echo "DONE"
 }
@@ -133,11 +129,12 @@ cleanup_system() {
 
     if systemctl -all list-unit-files ModemManager | grep "ModemManager enabled" >/dev/null 2>&1 ;then
 		echo "Uninstalling ModemManager"
-		apt-get remove --purge modemmanager >/dev/null 2>&1
+		apt-get remove --purge -y modemmanager >/dev/null 2>&1
+		apt-get remove --purge -y gcc-7-base gcc-8-base gcc-9-base
     fi
 
 	echo "Removing unused packages"
-	apt-get -y autoremove --purge >/dev/null 2>&1
+	apt-get autoremove --purge -y >/dev/null 2>&1
 
 	echo "DONE"
 }
@@ -153,8 +150,10 @@ system_update() {
 
 	echo "Package to update: $UPDATENUM"
 
-	apt-get update >/dev/null 2>&1
-	apt-get -y upgrade >/dev/null 2>&1
+	if [[ $UPDATENUM > 0 ]]; then
+		apt-get update >/dev/null 2>&1
+		apt-get -y upgrade >/dev/null 2>&1
+	fi
 
 	echo "DONE"
 }
