@@ -58,11 +58,12 @@ set_root_password() {
 # Setting the current date & time
 change_system_locale() {
 	echo ""
-	echo "Setting the current date and time:"
+	echo "Configuring the System Locale:"
 
 	rm -f /etc/localtime >/dev/null 2>&1
 	echo "Europe/Rome" >/etc/timezone >/dev/null 2>&1
 	dpkg-reconfigure -f noninteractive tzdata >/dev/null 2>&1
+	dpkg-reconfigure -f noninteractive keyboard-configuration
 
 	echo "DONE"
 }
