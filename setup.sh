@@ -50,20 +50,6 @@ set_root_password() {
 		echo "Password change error"
 		exit 1
 	fi
-	
-	echo "DONE"
-}
-
-# ========================================================================================================================================================================
-# Setting the current date & time
-change_system_locale() {
-	echo ""
-	echo "Configuring the System Locale:"
-
-	rm -f /etc/localtime >/dev/null 2>&1
-	echo "Europe/Rome" >/etc/timezone >/dev/null 2>&1
-	dpkg-reconfigure -f noninteractive tzdata >/dev/null 2>&1
-	dpkg-reconfigure -f noninteractive keyboard-configuration
 
 	echo "DONE"
 }
@@ -271,6 +257,36 @@ python_venv() {
 }
 
 # ========================================================================================================================================================================
+# Copy config file
+customize_telegram_bot() {
+	echo ""
+	echo "Customizing Telegram bot:"
+	read -p "[Press enter to continue]"
+
+	read -p "Type the Telegram GROUP_ID: " group_id
+	read -p "Type the Telegram BOT token: " bot_token
+
+	sed -i "s/^GROUP_ID=.*/GROUP_ID=\"$group_id\"/" /pi-shark/telegram-send.sh
+	sed -i "s/^BOT_TOKEN=.*/BOT_TOKEN=\"$bot_token\"/" /pi-shark/telegram-send.sh
+
+	echo "DONE"
+}
+
+# ========================================================================================================================================================================
+# Setting the current date & time
+change_system_locale() {
+	echo ""
+	echo "Configuring the System Locale:"
+
+	rm -f /etc/localtime >/dev/null 2>&1
+	echo "Europe/Rome" >/etc/timezone >/dev/null 2>&1
+	dpkg-reconfigure -f noninteractive tzdata >/dev/null 2>&1
+	dpkg-reconfigure -f noninteractive keyboard-configuration
+
+	echo "DONE"
+}
+
+# ========================================================================================================================================================================
 # Setup completed
 setup_complete() {
 	echo ""
@@ -280,7 +296,6 @@ setup_complete() {
 }
 
 set_root_password
-change_system_locale
 change_current_datetime
 set_hostname
 cleanup_system
@@ -290,4 +305,6 @@ install_network_component
 configure_network
 copy_config_files
 python_venv
+customize_telegram_bot
+change_system_locale
 setup_complete
