@@ -31,7 +31,9 @@ set_root_password() {
 	echo ""
 	echo "Setting a password for root user account:"
 	read -p "New password: " -s root_password_1
+	echo ""
 	read -p "Retype new password: " -s root_password_2
+	echo ""
 
 	if [ $root_password_1 != $root_password_2 ]; then
 		echo "Passwords do not match"
@@ -84,7 +86,7 @@ change_current_datetime() {
 set_hostname() {
 	echo ""
 	echo "Setting host name:"
-	read -p "Type the host name: " -s host_name
+	read -p "Type the host name: " host_name
 
 	hostnamectl set-hostname $host_name.local >/dev/null 2>&1
 
