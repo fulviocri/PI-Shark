@@ -222,10 +222,10 @@ copy_config_files() {
 
 	git clone https://github.com/fulviocri/PI-Shark.git /tmp/deploy >/dev/null 2>&1
 
-	rm /tmp/deploy/README.md
-	rm /tmp/deploy/setup.sh
+	rm /tmp/deploy/README.md >/dev/null 2>&1
+	rm /tmp/deploy/setup.sh >/dev/null 2>&1
 
-	cp -r /tmp/deploy/* /
+	cp -r /tmp/deploy/* / >/dev/null 2>&1
 	
 	ln -s /pi-shark/pi-shark.py /usr/bin/pi-shark . >/dev/null 2>&1
 	chown root:root /usr/bin/pi-shark . >/dev/null 2>&1
