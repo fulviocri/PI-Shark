@@ -325,6 +325,7 @@ install_network_component
 configure_network
 copy_config_files
 python_venv
+install_flask
 customize_telegram_bot
 change_system_locale
 setup_complete
