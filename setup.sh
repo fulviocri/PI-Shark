@@ -217,20 +217,22 @@ configure_network() {
 copy_config_files() {
 	echo ""
 	read -p "Copy config files. [Press enter to continue]"
-	
-	cp -RT /boot/deploy/. / >/dev/null 2>&1
 
-	mv /firstboot.sh /etc/profile.d/firstboot.sh
-	
-	ln -s /pi-tail/pi-tail.py /usr/bin/pi-tail
-	chown root:root /usr/bin/pi-tail
-	chmod +x /usr/bin/pi-tail
+	cd /
 
-	ln -s /pi-tail/telegram-send.sh /usr/bin/telegram-send
+	git clone https://github.com/fulviocri/PI-Shark.git . >/dev/null 2>&1
+	rm /README.md
+	rm /setup.sh
+	
+	ln -s /pi-shark/pi-shark.py /usr/bin/pi-shark
+	chown root:root /usr/bin/pi-shark
+	chmod +x /usr/bin/pi-shark
+
+	ln -s /pi-shark/telegram-send.sh /usr/bin/telegram-send
 	chown root:root /usr/bin/telegram-send
 	chmod +x /usr/bin/telegram-send
 
-	ln -s /pi-tail/web-server.sh /usr/bin/web-server
+	ln -s /pi-shark/web-server.sh /usr/bin/web-server
 	chown root:root /usr/bin/web-server
 	chmod +x /usr/bin/web-server
 
