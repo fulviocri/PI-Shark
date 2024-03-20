@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set +e
+
 if [ $(id -u) -ne 0 ]
 	then echo "Please run as root"
 	exit 1
@@ -24,7 +26,7 @@ echo ""
 
 # ========================================================================================================================================================================
 # Setting the password for the root user account
-setrootpassword() {
+set_root_password() {
 	echo ""
 	echo "Setting the password for root user account:"
 	echo -e "New password: "
@@ -38,8 +40,10 @@ setrootpassword() {
 		setrootpassword
 	fi
 
-	echo -e "$root_password_1\n$root_password_1" | passwd root >/dev/null 2>&1
+	echo "root:$root_password_1" | chpasswd -e
+	#echo -e "$root_password_1\n$root_password_1" | passwd root >/dev/null 2>&1
 	echo ""
+
 	if [ $? -eq 0 ]; then
 		echo "Password changed successfully"
 	else
@@ -52,7 +56,20 @@ setrootpassword() {
 
 # ========================================================================================================================================================================
 # Setting the current date & time
-changecurrentdatetime() {
+change_system_locale() {
+	echo ""
+	echo "Setting the current date and time:"
+
+	rm -f /etc/localtime >/dev/null 2>&1
+	echo "Europe/Rome" >/etc/timezone >/dev/null 2>&1
+	dpkg-reconfigure -f noninteractive tzdata >/dev/null 2>&1
+
+	echo "DONE"
+}
+
+# ========================================================================================================================================================================
+# Setting the current date & time
+change_current_datetime() {
 	echo ""
 	echo "Setting the current date and time:"
 	date
@@ -76,7 +93,7 @@ changecurrentdatetime() {
 
 # ========================================================================================================================================================================
 # Setting FQDN host name
-sethostname() {
+set_hostname() {
 	echo ""
 	echo "Setting FQDN host name"
 	read -p "[Press enter to continue]"
@@ -89,7 +106,7 @@ sethostname() {
 
 # ========================================================================================================================================================================
 # Cleaning up system
-cleanupsystem() {
+cleanup_system() {
 	echo ""
 	echo "Cleaning up system"
 	read -p "[Press enter to continue]"
@@ -140,7 +157,7 @@ cleanupsystem() {
 
 # ========================================================================================================================================================================
 # System update
-systemupdate() {
+system_update() {
 	echo ""
 	echo "Starting system update"
 	read -p "[Press enter to continue]"
@@ -157,7 +174,7 @@ systemupdate() {
 
 # ========================================================================================================================================================================
 # Installing base component
-installbasecomponent() {
+install_base_component() {
 	echo ""
 	echo "Installing base component"
 	read -p "[Press enter to continue]"
@@ -169,7 +186,7 @@ installbasecomponent() {
 
 # ========================================================================================================================================================================
 # Installing networking component
-installnetworkcomponent() {
+install_network_component() {
 	echo ""
 	echo "Installing networking component"
 	read -p "[Press enter to continue]"
@@ -188,12 +205,15 @@ installnetworkcomponent() {
 
 # ========================================================================================================================================================================
 # Configuring UFW firewall
-configurefirewall() {
+configure_network() {
 	echo ""
 	echo "Configuring UFW firewall"
 	read -p "[Press enter to continue]"
 
 	rfkill unblock wifi >/dev/null 2>&1
+	for filename in /var/lib/systemd/rfkill/*:wlan ; do
+		echo 0 > $filename
+	done
 
 	ufw default deny incoming >/dev/null 2>&1
 	ufw default allow outgoing >/dev/null 2>&1
@@ -205,7 +225,7 @@ configurefirewall() {
 
 # ========================================================================================================================================================================
 # Copy config file
-copyconfigfiles() {
+copy_config_files() {
 	echo ""
 	echo "Copy config files"
 	read -p "[Press enter to continue]"
@@ -231,7 +251,7 @@ copyconfigfiles() {
 
 # ========================================================================================================================================================================
 # Copy config file
-pythonvenv() {
+python_venv() {
 	echo ""
 	echo "Installing python vEnv and libraries"
 	read -p "[Press enter to continue]"
@@ -251,21 +271,22 @@ pythonvenv() {
 
 # ========================================================================================================================================================================
 # Setup completed
-setupcomplete() {
+setup_complete() {
 	echo ""
-	echo "PI-Tail setup completed"
+	echo "PI-Shark Setup completed"
 	read -p "[Press enter to reboot]"
 	reboot
 }
 
-setrootpassword
-changecurrentdatetime
-sethostname
-cleanupsystem
-systemupdate
-installbasecomponent
-installnetworkcomponent
-configurefirewall
-copyconfigfiles
-pythonvenv
-setupcomplete
+set_root_password
+change_system_locale
+change_current_datetime
+set_hostname
+cleanup_system
+system_update
+install_base_component
+install_network_component
+configure_network
+copy_config_files
+python_venv
+setup_complete
