@@ -40,8 +40,8 @@ set_root_password() {
 		setrootpassword
 	fi
 
-	echo "root:$root_password_1" | chpasswd -e >/dev/null 2>&1
-	#echo -e "$root_password_1\n$root_password_1" | passwd root >/dev/null 2>&1
+	#echo "root:$root_password_1" | chpasswd -e >/dev/null 2>&1
+	echo -e "$root_password_1\n$root_password_1" | passwd root >/dev/null 2>&1
 
 	if [ $? -eq 0 ]; then
 		echo "Password changed successfully"
@@ -136,7 +136,7 @@ cleanup_system() {
     if systemctl -all list-unit-files ModemManager | grep "ModemManager enabled" >/dev/null 2>&1 ;then
 		echo "Uninstalling ModemManager and old GCC versions"
 		apt-get remove --purge -y modemmanager >/dev/null 2>&1
-		apt-get remove --purge -y gcc-7-base gcc-8-base gcc-9-base
+		apt-get remove --purge -y gcc-7-base gcc-8-base gcc-9-base >/dev/null 2>&1
     fi
 
 	echo "Removing unused packages"
@@ -315,9 +315,9 @@ setup_complete() {
 	reboot
 }
 
-set_root_password
+#set_root_password
 change_current_datetime
-set_hostname
+#set_hostname
 cleanup_system
 system_update
 install_base_component

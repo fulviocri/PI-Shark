@@ -1,4 +1,4 @@
-#!/pi-tail/venv/bin/python
+#!/pi-shark/.venv/bin/python
 
 import os
 import atexit
