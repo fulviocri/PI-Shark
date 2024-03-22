@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set +e
-exec >/dev/null 2>&1
+exec > >(while read line; do echo "$line"; done) 2>&1
 
 if [ $(id -u) -ne 0 ]
 	then echo "Please run as root"
