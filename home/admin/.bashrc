@@ -6,7 +6,7 @@ case $- in
       *) return;;
 esac
 
-# [ -z "$TMUX"  ] && { tmux attach || exec tmux new-session && exit;}
+[ -z "$TMUX"  ] && { tmux attach || exec tmux new-session && exit;}
 
 # don't put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options
