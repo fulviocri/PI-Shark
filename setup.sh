@@ -1,10 +1,10 @@
 #!/bin/bash
 
 set +e
-exec > >(while read line; do echo "$line"; do read "$line"; done) 2>&1
+#exec > >(while read line; do echo "$line"; do read "$line"; done) 2>&1
 
 if [ $(id -u) -ne 0 ]
-	then echo "Please run as root"
+	then echo "Please run $0 as root"
 	exit 1
 fi
 
@@ -249,24 +249,7 @@ python_libs() {
 	echo ""
 	read -p "Installing python libraries. [Press enter to continue]"
 
-	apt-get install -y python3-netifaces
-	apt-get install -y python3-requests
-	apt-get install -y python3-nmap
-	apt-get install -y python3-scapy
-
-	echo "DONE"
-}
-
-# ========================================================================================================================================================================
-# Installing Python Bottle
-install_bottle() {
-	echo ""
-	read -p "Installing Bottle. [Press enter to continue]"
-
-	python3 -m venv /pi-shark/admin/.venv
-	source /pi-shark/admin/.venv/bin/activate
-	pip install bottle
-	deactivate
+	apt-get install -y python3-netifaces python3-requests python3-nmap python3-scapy python3-bottle
 
 	echo "DONE"
 }
@@ -310,7 +293,7 @@ setup_complete() {
 	reboot
 }
 
-#set_root_password
+set_root_password
 change_current_datetime
 #set_hostname
 cleanup_system
@@ -320,7 +303,6 @@ install_network_component
 configure_network
 copy_config_files
 python_libs
-#install_bottle
 customize_telegram_bot
 change_system_locale
 setup_complete

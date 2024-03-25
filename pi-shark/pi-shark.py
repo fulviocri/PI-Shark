@@ -1,4 +1,4 @@
-#!/pi-shark/.venv/bin/python
+#!/usr/bin/python3
 
 import os
 import atexit
