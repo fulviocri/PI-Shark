@@ -189,7 +189,7 @@ install_network_component() {
 	# apt-get install -y arping arpon arp-scan
 	apt-get install -y arping arp-scan
     apt-get install -y dnsenum dnsmap dnsrecon dnswalk dnsutils
-	apt-get install -y backdoor-factory masscan netdiscover
+	apt-get install -y backdoor-factory masscan netdiscover macchanger
 	
 	echo "DONE"
 }

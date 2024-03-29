@@ -1,0 +1,3 @@
+#ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="0fe6", ATTRS{idProduct}=="9700", ENV{DEVNAME}!="", RUN+="/usr/bin/pi-shark"
+ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="0fe6", ATTRS{idProduct}=="9700", ENV{DEVNAME}!="", RUN+="/pi-shark/pi-shark.py"
+ACTION=="remove", SUBSYSTEM=="usb", ENV{ID_VENDOR_ID}=="0fe6", ENV{ID_MODEL_ID}=="9700", RUN+="/pi-shark/usb_event.sh"
