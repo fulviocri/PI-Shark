@@ -21,7 +21,6 @@ from scapy.all import Ether, UDP, BOOTP, DHCP, srp, IP, get_if_raw_hwaddr, sniff
 
 app_version = "0.5"
 
-
 pid_file = "/run/pi-tail.pid"
 log_file = "/var/log/pi-shark.log"
 
@@ -146,11 +145,11 @@ def check_dhcp_server():
             my_ip = dhcp_options["offered_ip"]
             my_mask = dhcp_options["cidr_mask"]
 
-            target_network = ipaddress.ip_network(my_ip + my_mask, strict=False)
+            target_network = ipaddress.ip_network(dhcp_options["offered_ip"] + dhcp_options["cidr_mask"], strict=False)
 
         if response[1][IP].src:
-            logging.info(f"  Found a DHCP server with IP: {dhcp_ip}")
-            logging.info(f"  DHCP server offered IP: {my_ip}/{my_mask}")
+            logging.info(f"  Found a DHCP server with IP: {dhcp_options["dhcp_server"]}")
+            logging.info(f"  DHCP server offered IP: {dhcp_options["offered_ip"]}/{dhcp_options["cidr_mask"]}")
             return True
         else:
             logging.info("  No DHCP server found in the network.")
